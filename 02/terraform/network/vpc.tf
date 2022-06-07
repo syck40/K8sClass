@@ -1,6 +1,6 @@
 
 locals {
-  region = "us-west-2"
+  region = "us-east-1"
 }
 
 module "vpc_example_simple-vpc" {
