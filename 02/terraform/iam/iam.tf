@@ -8,8 +8,8 @@
 # https://www.terraform.io/docs/providers/aws/index.html
 # select the region you want to perform this operation in. 
 provider "aws" {
-  profile = "cr"
-  region  = "us-west-1"
+  profile = "default"
+  region  = "us-east-1"
 }
 
 ########################################################
@@ -131,6 +131,10 @@ resource "aws_iam_group_policy" "iamPassRole" {
   policy = data.aws_iam_policy_document.iamPassRole.json
 }
 
+data "local_file" "pgp_key" {
+  filename = "/home/cloudshell-user/tf/ch1/user2pub.crt"
+}
+
 
 ########################################################
 # Create EKS Demo user and add to group
@@ -169,7 +173,7 @@ resource "aws_iam_user_policy" "eksdude" {
 
 resource "aws_iam_user_login_profile" "eksdude" {
   user            = aws_iam_user.eksdude.name
-  pgp_key         = var.pgp_key
+  pgp_key         = data.local_file.pgp_key.content_base64
   password_length = 10
 
   lifecycle {
@@ -183,7 +187,7 @@ output "password" {
 
 resource "aws_iam_access_key" "eksdude" {
   user    = aws_iam_user.eksdude.name
-  pgp_key = var.pgp_key
+  pgp_key = data.local_file.pgp_key.content_base64
 }
 
 output "secret" {
